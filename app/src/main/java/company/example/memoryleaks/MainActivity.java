@@ -1,5 +1,6 @@
 package company.example.memoryleaks;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Debug;
 import android.support.design.widget.FloatingActionButton;
@@ -11,15 +12,30 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView mInfo;
+    public static RefWatcher getRefWatcher(Context context) {
+        MainActivity application = (MainActivity) context.getApplicationContext();
+        return application.refWatcher;
+    }
+
+    private RefWatcher refWatcher;
+    private String test;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        test = "holi";
+        refWatcher = LeakCanary.install(getApplication());
+        refWatcher.watch(test);
+        changeIt();
 
         mInfo = (TextView) findViewById(R.id.txtInfo);
         mInfo.setText("The information of the apps is going to appear here...");
@@ -42,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    private void changeIt() {
+        test=null;
     }
 
     @Override
